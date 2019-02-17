@@ -1,0 +1,12 @@
+{
+    "mysql":{
+        "host" : "devdb.hubcloud.com.cn",
+        "port" : "13306",
+        "user" : "hub",
+        "pass" : "blahblah",
+        "protocol" : "tcp",
+        "schema" : "hubDsp",
+        "charset" : "utf8"
+    },
+    "schema":["test"]
+}
