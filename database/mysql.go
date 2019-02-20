@@ -11,8 +11,8 @@ import (
 
 //Init 初始化
 func Init(cfg config.Configuration) error {
-	gMySQL.connect(cfg.ConnString())
-	return nil
+	var err = gMySQL.connect(cfg.ConnString())
+	return err
 }
 
 var gMySQL = new(mysql)
@@ -29,6 +29,7 @@ func (m *mysql) close() {
 	}
 }
 
+//连接DB
 func (m *mysql) connect(connString string) error {
 	if len(connString) == 0 {
 		return fmt.Errorf("connection string is empty")
@@ -37,6 +38,7 @@ func (m *mysql) connect(connString string) error {
 	const mode = "mysql"
 
 	var err error
+	fmt.Println("begin to open database")
 	if m.dbInstance, err = sql.Open(mode, connString); err != nil {
 		fmt.Printf("connect database error:[%v]", err)
 		m.dbInstance = nil
@@ -47,9 +49,10 @@ func (m *mysql) connect(connString string) error {
 	return nil
 }
 
-func (m *mysql) refreshConn() {
+//刷新DB连接，并返回当前连接是否是有效的连接
+func (m *mysql) refreshConn() bool {
 	if m.isAlive() {
-		return
+		return true
 	}
 
 	m.dbInstance = nil //clean dbInstance
@@ -61,9 +64,10 @@ func (m *mysql) refreshConn() {
 		break
 	}
 
-	return
+	return m.dbInstance != nil
 }
 
+//当前连接是否是活动的
 func (m *mysql) isAlive() bool {
 	defer func() {
 		if err := recover(); err != nil {
@@ -83,6 +87,16 @@ func (m *mysql) isAlive() bool {
 	return true
 }
 
-func (m *mysql) query() {
-
+//Database 返回数据库
+func (m *mysql) Database() *sql.DB {
+	/*/
+		fmt.Println("try to get database instance")
+		defer func() {
+			fmt.Println("get database instance : ", m.dbInstance)
+		}()
+	//*/
+	if m.refreshConn() {
+		return m.dbInstance
+	}
+	return nil
 }
