@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"baliance.com/gooxml/color"
 	"baliance.com/gooxml/document"
 	"baliance.com/gooxml/measurement"
 	"baliance.com/gooxml/schema/soo/wml"
@@ -44,7 +45,10 @@ func addTable(doc *document.Document, t database.TableDefine, c []database.Colum
 	addTableName(doc, t.Name, t.Comment)
 
 	table := doc.AddTable()
+	table.Properties().Borders().SetAll(1*wml.ST_BorderSingle, color.Black, 1*measurement.Point)
+
 	addTableTitle(table)
+
 	for _, item := range c {
 		addTableRow(table, item)
 	}
